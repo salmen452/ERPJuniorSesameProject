@@ -23,9 +23,11 @@ ERPJuniorSesameProject
 * Python 3.7+
 * `django`
 
-Installation:
+## Installation:
 
 ```bash
+git clone https://github.com/ErrayDineri/ERPJuniorSesameProject
+cd ERPJuniorSesameProject
 pip install -r requirements.txt
 ```
 
