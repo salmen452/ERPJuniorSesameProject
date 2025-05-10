@@ -5,6 +5,9 @@
 ```
 ERPJuniorSesameProject
 ├──main/
+   ├──templates
+      ├──base.html (define the base html of the website: navbar, footer)
+      ├──*.html
    ├──models.py (defines the tables)
    ├──views.py (implements the website logic)
    ├──urls.py (defines the website endpoints)
