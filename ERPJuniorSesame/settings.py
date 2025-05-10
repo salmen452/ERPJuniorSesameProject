@@ -121,3 +121,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'main.CustomUser'   # ← tell Django about your custom user
+
+LOGIN_URL = 'login'                   # ← name of your login URL
+LOGIN_REDIRECT_URL = 'dashboard'      # ← where to send users after login
+LOGOUT_REDIRECT_URL = 'login'         # ← where to send users after logout

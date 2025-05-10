@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard{% endblock %}
+{% block content %}
+<h2>Welcome, {{ user.username }}</h2>
+<h3>Your Absences</h3>
+<ul>
+    {% for a in absences %}
+    <li>{{ a.date_debut }} – {{ a.date_fin }}: {{ a.motif }}</li>
+    {% empty %}
+    <li>No absences recorded.</li>
+    {% endfor %}
+</ul>
+<h3>Your Formations</h3>
+<ul>
+    {% for f in formations %}
+    <li>{{ f.intitule }} ({{ f.organisme }})</li>
+    {% empty %}
+    <li>No trainings recorded.</li>
+    {% endfor %}
+</ul>
+<h3>Your Performances</h3>
+<ul>
+    {% for p in performances %}
+    <li>{{ p.date_evaluation }}: {{ p.note }} / Comment: {{ p.commentaires }}</li>
+    {% empty %}
+    <li>No evaluations recorded.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
