@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Détails de l'Absence{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Détails de l'Absence</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'absence_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Membre:</strong></p>
+                            <p>{{ absence.membre.get_full_name|default:absence.membre.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Email:</strong></p>
+                            <p>{{ absence.membre.email }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date de début:</strong></p>
+                            <p>{{ absence.date_debut|date:"d/m/Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date de fin:</strong></p>
+                            <p>{{ absence.date_fin|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Motif:</strong></p>
+                            <p>{{ absence.get_motif_display }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Certificat médical:</strong></p>
+                            <p>{% if absence.certificat_medical %}Oui{% else %}Non{% endif %}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <p class="mb-1"><strong>Détails du motif:</strong></p>
+                            <p>{{ absence.details_motif|linebreaks|default:"Aucun détail fourni" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Statut:</strong></p>
+                            <p>
+                                {% if absence.date_fin < now.date %}
+                                    {% if absence.retour_verifie %}
+                                        <span class="badge bg-success">Retour vérifié</span>
+                                    {% elif absence.notif_retour %}
+                                        <span class="badge bg-warning">Notifié</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Terminé, non vérifié</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-primary">En cours</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% if absence.notif_retour %}
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date de notification:</strong></p>
+                            <p>{{ absence.date_notification|date:"d/m/Y"|default:"Non notifié" }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            {% if user.groups.all.0.name == 'Admin' and absence.date_fin < now.date %}
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions administratives</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex">
+                        {% if not absence.notif_retour %}
+                        <a href="{% url 'absence_notification' absence.id %}" class="btn btn-warning me-2">
+                            <i class="fas fa-bell"></i> Envoyer notification de retour
+                        </a>
+                        {% endif %}
+                        
+                        {% if not absence.retour_verifie %}
+                        <a href="{% url 'absence_verify_return' absence.id %}" class="btn btn-success">
+                            <i class="fas fa-check"></i> Vérifier le retour
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">Notifications de retour</h5>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                    <div class="list-group">
+                        {% for notification in notifications %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ notification.date_envoi|date:"d/m/Y" }}</h6>
+                                <small>Par {{ notification.envoye_par.username }}</small>
+                            </div>
+                            <p class="mb-1">{{ notification.message }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">Aucune notification envoyée</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

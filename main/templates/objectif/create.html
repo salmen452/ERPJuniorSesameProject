@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Créer un Objectif{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0">Nouvel Objectif</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">Informations sur le membre</h5>
+                        <p><strong>Membre:</strong> {{ membre.get_full_name|default:membre.username }}</p>
+                        <p><strong>Email:</strong> {{ membre.email }}</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description de l'objectif</label>
+                            <textarea name="{{ form.description.name }}" 
+                                class="form-control {% if form.description.errors %}is-invalid{% endif %}" 
+                                id="{{ form.description.id_for_label }}" rows="3">{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.description.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.date_echeance.id_for_label }}" class="form-label">Date d'échéance</label>
+                                <input type="date" name="{{ form.date_echeance.name }}" value="{{ form.date_echeance.value|date:'Y-m-d'|default:'' }}" 
+                                    class="form-control {% if form.date_echeance.errors %}is-invalid{% endif %}" 
+                                    id="{{ form.date_echeance.id_for_label }}">
+                                {% if form.date_echeance.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.date_echeance.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">Statut</label>
+                                <select name="{{ form.status.name }}" 
+                                    class="form-select {% if form.status.errors %}is-invalid{% endif %}" 
+                                    id="{{ form.status.id_for_label }}">
+                                    {% for value, text in form.fields.status.choices %}
+                                    <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ text }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.status.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.status.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.commentaires.id_for_label }}" class="form-label">Commentaires</label>
+                            <textarea name="{{ form.commentaires.name }}" 
+                                class="form-control {% if form.commentaires.errors %}is-invalid{% endif %}" 
+                                id="{{ form.commentaires.id_for_label }}" rows="3">{{ form.commentaires.value|default:'' }}</textarea>
+                            {% if form.commentaires.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.commentaires.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="text-end">
+                            <a href="{% url 'member_detail' membre.id %}" class="btn btn-secondary me-2">Annuler</a>
+                            <button type="submit" class="btn btn-warning">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% block title %}Détails du Membre{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Profil de {{ membre.get_full_name|default:membre.username }}</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'member_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Informations Personnelles</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nom d'utilisateur:</strong> {{ membre.username }}</p>
+                    <p><strong>Nom complet:</strong> {{ membre.get_full_name|default:"-" }}</p>
+                    <p><strong>Email:</strong> {{ membre.email }}</p>
+                    <p><strong>Téléphone:</strong> {{ membre.telephone|default:"-" }}</p>
+                    <p><strong>Adresse:</strong> {{ membre.adresse_postale|linebreaks|default:"-" }}</p>
+                    <p><strong>Date d'adhésion:</strong> {{ membre.date_adhesion|date:"d/m/Y"|default:"-" }}</p>
+                    <p><strong>Dernier login:</strong> {{ membre.last_login|date:"d/m/Y H:i"|default:"-" }}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group w-100">
+                        <a href="{% url 'exclusion_create' membre.id %}" class="btn btn-warning">
+                            <i class="fas fa-user-slash"></i> Exclusion/Démission
+                        </a>
+                        <a href="{% url 'performance_create' membre.id %}" class="btn btn-primary">
+                            <i class="fas fa-chart-line"></i> Évaluer
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Compétences</h5>
+                </div>
+                <div class="card-body">
+                    {% if competences %}
+                    <ul class="list-group list-group-flush">
+                        {% for competence in competences %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>{{ competence.libelle }}</span>
+                                <span class="badge bg-primary">Niveau {{ competence.niveau }}</span>
+                            </div>
+                            <small class="text-muted">{{ competence.get_categorie_display }}</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted text-center">Aucune compétence enregistrée</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Absences</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if absences %}
+                            <div class="list-group">
+                                {% for absence in absences|slice:":5" %}
+                                <a href="{% url 'absence_detail' absence.id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ absence.date_debut|date:"d/m/Y" }} - {{ absence.date_fin|date:"d/m/Y" }}</h6>
+                                        <span class="badge 
+                                            {% if absence.date_fin < now.date %}
+                                                {% if absence.retour_verifie %}
+                                                    bg-success
+                                                {% elif absence.notif_retour %}
+                                                    bg-warning
+                                                {% else %}
+                                                    bg-danger
+                                                {% endif %}
+                                            {% else %}
+                                                bg-primary
+                                            {% endif %}">
+                                            {{ absence.get_motif_display }}
+                                        </span>
+                                    </div>
+                                    <p class="mb-1">{{ absence.details_motif|truncatechars:50 }}</p>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% if absences.count > 5 %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'absence_list' %}" class="btn btn-sm btn-outline-secondary">Voir toutes ({{ absences.count }})</a>
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <p class="text-muted text-center">Aucune absence enregistrée</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Formations</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if formations %}
+                            <div class="list-group">
+                                {% for formation in formations|slice:":5" %}
+                                <a href="{% url 'formation_detail' formation.id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ formation.intitule }}</h6>
+                                        <span class="badge {% if formation.certification %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ formation.get_niveau_display }}
+                                        </span>
+                                    </div>
+                                    <p class="mb-1">{{ formation.organisme }}</p>
+                                    <small class="text-muted">{{ formation.date_debut|date:"d/m/Y" }} - {{ formation.date_fin|date:"d/m/Y" }}</small>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% if formations.count > 5 %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'formation_list' %}" class="btn btn-sm btn-outline-secondary">Voir toutes ({{ formations.count }})</a>
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <p class="text-muted text-center">Aucune formation enregistrée</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow">
+                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Évaluations de Performance</h5>
+                            <a href="{% url 'performance_create' membre.id %}" class="btn btn-sm btn-light">
+                                <i class="fas fa-plus-circle"></i> Nouvelle évaluation
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            {% if performances %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Responsable</th>
+                                            <th>Note</th>
+                                            <th>Objectifs atteints</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for performance in performances %}
+                                        <tr>
+                                            <td>{{ performance.date_evaluation|date:"d/m/Y" }}</td>
+                                            <td>{{ performance.responsable.utilisateur.get_full_name|default:performance.responsable.utilisateur.username }}</td>
+                                            <td>
+                                                <span class="badge {% if performance.note >= 3.5 %}bg-success{% elif performance.note >= 2 %}bg-warning{% else %}bg-danger{% endif %}">
+                                                    {{ performance.note }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if performance.objectifs_atteints %}
+                                                <span class="badge bg-success">Oui</span>
+                                                {% else %}
+                                                <span class="badge bg-danger">Non</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'performance_detail' performance.id %}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <p class="text-muted text-center">Aucune évaluation enregistrée</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Objectifs</h5>
+                            <a href="{% url 'objectif_create' membre.id %}" class="btn btn-sm btn-dark">
+                                <i class="fas fa-plus-circle"></i> Nouvel objectif
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            {% if objectifs %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Date d'échéance</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for objectif in objectifs %}
+                                        <tr>
+                                            <td>{{ objectif.description|truncatechars:50 }}</td>
+                                            <td>{{ objectif.date_echeance|date:"d/m/Y" }}</td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if objectif.status == 'termine' %}bg-success
+                                                    {% elif objectif.status == 'en_cours' %}bg-primary
+                                                    {% elif objectif.status == 'non_commence' %}bg-secondary
+                                                    {% else %}bg-danger{% endif %}">
+                                                    {{ objectif.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'objectif_detail' objectif.id %}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <p class="text-muted text-center">Aucun objectif enregistré</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

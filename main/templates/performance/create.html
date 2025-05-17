@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Créer une Évaluation{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Nouvelle Évaluation de Performance</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">Informations sur le membre</h5>
+                        <p><strong>Membre:</strong> {{ membre.get_full_name|default:membre.username }}</p>
+                        <p><strong>Email:</strong> {{ membre.email }}</p>
+                        <p><strong>Date d'adhésion:</strong> {{ membre.date_adhesion|date:"d/m/Y"|default:"-" }}</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.note.id_for_label }}" class="form-label">Note globale</label>
+                            <select name="{{ form.note.name }}" 
+                                class="form-select {% if form.note.errors %}is-invalid{% endif %}" 
+                                id="{{ form.note.id_for_label }}">
+                                <option value="">Sélectionnez une note</option>
+                                {% for value, text in form.fields.note.choices %}
+                                <option value="{{ value }}" {% if form.note.value == value %}selected{% endif %}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                            {% if form.note.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.note.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.commentaires.id_for_label }}" class="form-label">Commentaires généraux</label>
+                            <textarea name="{{ form.commentaires.name }}" 
+                                class="form-control {% if form.commentaires.errors %}is-invalid{% endif %}" 
+                                id="{{ form.commentaires.id_for_label }}" rows="3">{{ form.commentaires.value|default:'' }}</textarea>
+                            {% if form.commentaires.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.commentaires.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.forces.id_for_label }}" class="form-label">Points forts</label>
+                            <textarea name="{{ form.forces.name }}" 
+                                class="form-control {% if form.forces.errors %}is-invalid{% endif %}" 
+                                id="{{ form.forces.id_for_label }}" rows="3">{{ form.forces.value|default:'' }}</textarea>
+                            {% if form.forces.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.forces.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.axes_amelioration.id_for_label }}" class="form-label">Axes d'amélioration</label>
+                            <textarea name="{{ form.axes_amelioration.name }}" 
+                                class="form-control {% if form.axes_amelioration.errors %}is-invalid{% endif %}" 
+                                id="{{ form.axes_amelioration.id_for_label }}" rows="3">{{ form.axes_amelioration.value|default:'' }}</textarea>
+                            {% if form.axes_amelioration.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.axes_amelioration.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.objectifs.id_for_label }}" class="form-label">Objectifs pour la prochaine période</label>
+                            <textarea name="{{ form.objectifs.name }}" 
+                                class="form-control {% if form.objectifs.errors %}is-invalid{% endif %}" 
+                                id="{{ form.objectifs.id_for_label }}" rows="3">{{ form.objectifs.value|default:'' }}</textarea>
+                            {% if form.objectifs.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.objectifs.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.date_prochain_suivi.id_for_label }}" class="form-label">Date du prochain suivi</label>
+                                <input type="date" name="{{ form.date_prochain_suivi.name }}" value="{{ form.date_prochain_suivi.value|date:'Y-m-d'|default:'' }}" 
+                                    class="form-control {% if form.date_prochain_suivi.errors %}is-invalid{% endif %}" 
+                                    id="{{ form.date_prochain_suivi.id_for_label }}">
+                                {% if form.date_prochain_suivi.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.date_prochain_suivi.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mt-4 form-check">
+                                    <input type="checkbox" name="{{ form.objectifs_atteints.name }}" 
+                                        class="form-check-input {% if form.objectifs_atteints.errors %}is-invalid{% endif %}" 
+                                        id="{{ form.objectifs_atteints.id_for_label }}" 
+                                        {% if form.objectifs_atteints.value %}checked{% endif %}>
+                                    <label class="form-check-label" for="{{ form.objectifs_atteints.id_for_label }}">
+                                        Objectifs précédents atteints
+                                    </label>
+                                    {% if form.objectifs_atteints.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.objectifs_atteints.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-end">
+                            <a href="{% url 'member_detail' membre.id %}" class="btn btn-secondary me-2">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

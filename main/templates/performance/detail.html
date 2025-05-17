@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Détails de l'Évaluation{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Détails de l'Évaluation</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'performance_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        Évaluation du {{ performance.date_evaluation|date:"d/m/Y" }}
+                        <span class="float-end badge {% if performance.note >= 3.5 %}bg-success{% elif performance.note >= 2 %}bg-warning{% else %}bg-danger{% endif %}">
+                            {{ performance.note }}
+                        </span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Membre:</strong></p>
+                            <p>{{ performance.membre.get_full_name|default:performance.membre.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Responsable:</strong></p>
+                            <p>{{ performance.responsable.utilisateur.get_full_name|default:performance.responsable.utilisateur.username }}</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="mb-4">
+                        <h5>Commentaires généraux</h5>
+                        <p>{{ performance.commentaires|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">Points forts</h5>
+                                </div>
+                                <div class="card-body">
+                                    {{ performance.forces|linebreaks|default:"Aucun point fort spécifié." }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0">Axes d'amélioration</h5>
+                                </div>
+                                <div class="card-body">
+                                    {{ performance.axes_amelioration|linebreaks|default:"Aucun axe d'amélioration spécifié." }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Objectifs pour la prochaine période</h5>
+                        <p>{{ performance.objectifs|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Objectifs précédents:</strong></p>
+                            <p>
+                                {% if performance.objectifs_atteints %}
+                                <span class="badge bg-success">Atteints</span>
+                                {% else %}
+                                <span class="badge bg-danger">Non atteints</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Prochain suivi prévu:</strong></p>
+                            <p>{{ performance.date_prochain_suivi|date:"d/m/Y"|default:"Non planifié" }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% if user.groups.all.0.name == 'Admin' %}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'objectif_create' performance.membre.id %}" class="btn btn-warning">
+                            <i class="fas fa-tasks"></i> Créer un objectif
+                        </a>
+                        <a href="{% url 'member_detail' performance.membre.id %}" class="btn btn-info">
+                            <i class="fas fa-user"></i> Voir le profil
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

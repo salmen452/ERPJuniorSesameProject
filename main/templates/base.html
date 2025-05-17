@@ -30,30 +30,75 @@
     </style>
 </head>
 
-<body>
-
-    <!-- Navbar -->
+<body>    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'dashboard' %}">HR Portal</a>
+            <a class="navbar-brand" href="{% url 'dashboard' %}">Junior Sesame RH</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">Tableau de bord</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profil' %}">Mon Profil</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="absencesDropdown" role="button" data-bs-toggle="dropdown">
+                            Absences
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'absence_list' %}">Mes Absences</a></li>
+                            <li><a class="dropdown-item" href="{% url 'absence_create' %}">Déclarer une Absence</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="formationsDropdown" role="button" data-bs-toggle="dropdown">
+                            Formations
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'formation_list' %}">Mes Formations</a></li>
+                            <li><a class="dropdown-item" href="{% url 'formation_create' %}">Ajouter une Formation</a></li>
+                            <li><a class="dropdown-item" href="{% url 'competence_list' %}">Mes Compétences</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'performance_list' %}">Évaluations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'document_accessible_list' %}">Documents RH</a>
+                    </li>
+                    
+                    {% if user.groups.all.0.name == 'Admin' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                            Administration
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'member_list' %}">Gestion des Membres</a></li>
+                            <li><a class="dropdown-item" href="{% url 'exclusion_list' %}">Exclusions & Démissions</a></li>
+                            <li><a class="dropdown-item" href="{% url 'document_list' %}">Gestion Documents RH</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">{{ user.username }}</a>
+                        <span class="nav-link">{{ user.username }}</span>
                     </li>
                     <li class="nav-item">
                         <form action="{% url 'logout' %}" method="post" style="display:inline">
                             {% csrf_token %}
-                            <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
-                                Logout
+                            <button type="submit" class="btn btn-link nav-link">
+                                Déconnexion
                             </button>
                         </form>
-
                     </li>
                     {% else %}
                     <li class="nav-item">

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Détails de la Formation{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Détails de la Formation</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'formation_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ formation.intitule }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Membre:</strong></p>
+                            <p>{{ formation.membre.get_full_name|default:formation.membre.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Organisme:</strong></p>
+                            <p>{{ formation.organisme }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date de début:</strong></p>
+                            <p>{{ formation.date_debut|date:"d/m/Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date de fin:</strong></p>
+                            <p>{{ formation.date_fin|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Niveau:</strong></p>
+                            <p>{{ formation.get_niveau_display }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Certification:</strong></p>
+                            <p>
+                                {% if formation.certification %}
+                                <span class="badge bg-success">Oui</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Non</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if formation.description %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <p class="mb-1"><strong>Description:</strong></p>
+                            <p>{{ formation.description|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if formation.document_certification %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <p class="mb-1"><strong>Document de certification:</strong></p>
+                            <p>
+                                <a href="{{ formation.document_certification.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="fas fa-file-download"></i> Télécharger le document
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'competence_create' formation.id %}" class="btn btn-success">
+                        <i class="fas fa-plus-circle"></i> Ajouter une compétence
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Compétences acquises</h5>
+                </div>
+                <div class="card-body">
+                    {% if competences %}
+                    <ul class="list-group list-group-flush">
+                        {% for competence in competences %}
+                        <li class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ competence.libelle }}</h6>
+                                <span class="badge bg-primary">Niveau {{ competence.niveau }}</span>
+                            </div>
+                            <p class="mb-1">
+                                <small class="text-muted">{{ competence.code }} - {{ competence.get_categorie_display }}</small>
+                            </p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted text-center">Aucune compétence associée à cette formation.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

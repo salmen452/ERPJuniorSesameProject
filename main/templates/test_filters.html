@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block title %}Test des Filtres Personnalisés{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Test des Filtres Personnalisés</h1>
+    
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h3>Filtre Multiplication</h3>
+        </div>
+        <div class="card-body">
+            <p>5 x 4 = {{ 5|mul:4 }}</p>
+            <p>10 x 20 = {{ 10|mul:20 }}</p>
+            
+            <div class="progress" style="height: 25px;">
+                <div class="progress-bar bg-success" role="progressbar" 
+                    style="width: {{ 3|mul:20 }}%;" 
+                    aria-valuenow="3" aria-valuemin="0" aria-valuemax="5">
+                    3/5 ({{ 3|mul:20 }}%)
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h3>Filtre Division</h3>
+        </div>
+        <div class="card-body">
+            <p>10 ÷ 2 = {{ 10|divide:2 }}</p>
+            <p>100 ÷ 4 = {{ 100|divide:4 }}</p>
+        </div>
+    </div>
+    
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h3>Filtre Pourcentage</h3>
+        </div>
+        <div class="card-body">
+            <p>75 sur 100 = {{ 75|percentage:100 }}%</p>
+            <p>3 sur 5 = {{ 3|percentage:5 }}%</p>
+            
+            <div class="progress" style="height: 25px;">
+                <div class="progress-bar bg-info" role="progressbar" 
+                    style="width: {{ 4|percentage:5 }}%;" 
+                    aria-valuenow="4" aria-valuemin="0" aria-valuemax="5">
+                    4/5 ({{ 4|percentage:5 }}%)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

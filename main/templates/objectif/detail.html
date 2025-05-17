@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Détails de l'Objectif{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Détails de l'Objectif</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'member_detail' objectif.membre.id %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour au profil
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center 
+                    {% if objectif.status == 'termine' %}bg-success text-white
+                    {% elif objectif.status == 'en_cours' %}bg-primary text-white
+                    {% elif objectif.status == 'non_commence' %}bg-secondary text-white
+                    {% else %}bg-danger text-white{% endif %}">
+                    <h3 class="mb-0">Objectif - {{ objectif.get_status_display }}</h3>
+                    <span class="badge bg-light text-dark">Échéance: {{ objectif.date_echeance|date:"d/m/Y" }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Membre:</strong></p>
+                            <p>{{ objectif.membre.get_full_name|default:objectif.membre.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date de création:</strong></p>
+                            <p>{{ objectif.date_creation|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Responsable du suivi:</strong></p>
+                            <p>
+                                {% if objectif.responsable_suivi %}
+                                {{ objectif.responsable_suivi.utilisateur.get_full_name|default:objectif.responsable_suivi.utilisateur.username }}
+                                {% else %}
+                                Non assigné
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Statut actuel:</strong></p>
+                            <p>
+                                <span class="badge 
+                                    {% if objectif.status == 'termine' %}bg-success
+                                    {% elif objectif.status == 'en_cours' %}bg-primary
+                                    {% elif objectif.status == 'non_commence' %}bg-secondary
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ objectif.get_status_display }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Description</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ objectif.description|linebreaks }}
+                        </div>
+                    </div>
+                    
+                    {% if objectif.commentaires %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Commentaires</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ objectif.commentaires|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.groups.all.0.name == 'Admin' %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Mettre à jour le statut</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'objectif_update_status' objectif.id %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select name="status" class="form-select">
+                                            {% for value, text in statuses %}
+                                            <option value="{{ value }}" {% if objectif.status == value %}selected{% endif %}>{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

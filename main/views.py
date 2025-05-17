@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from .forms import CustomUserCreationForm, EmailAuthenticationForm
-from .models import CustomUser, Absence, Formation, Performance
+from .models import CustomUser, Absence, Formation, Performance, ObjectifMembre
 from django.contrib.auth.models import Group
 
 def custom_login_view(request):
@@ -45,8 +45,14 @@ def dashboard_view(request):
         absences     = Absence.objects.filter(membre=request.user)
         formations   = Formation.objects.filter(membre=request.user)
         performances = Performance.objects.filter(membre=request.user)
+        objectifs    = ObjectifMembre.objects.filter(membre=request.user)
         return render(request, 'user_dashboard.html', {
             'absences': absences,
             'formations': formations,
             'performances': performances,
+            'objectifs': objectifs,
         })
+
+# Add a test view for custom filters
+def test_filters_view(request):
+    return render(request, 'test_filters.html')

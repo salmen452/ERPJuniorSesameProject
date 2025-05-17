@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Documents Accessibles{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Documents RH Accessibles</h2>
+        </div>
+    </div>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            {% if documents %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for document in documents %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">{{ document.titre }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">{{ document.get_type_display }} - v{{ document.version }}</h6>
+                            <p class="card-text">{{ document.description|truncatechars:100 }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Mis à jour le {{ document.dernier_modif|date:"d/m/Y" }}
+                                </small>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="btn-group w-100">
+                                <a href="{% url 'document_detail' document.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> Voir
+                                </a>
+                                <a href="{% url 'document_download' document.id %}" class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-download"></i> Télécharger
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Aucun document RH accessible.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

@@ -1,29 +1,137 @@
 {% extends "base.html" %}
-{% block title %}My Dashboard{% endblock %}
+{% block title %}Tableau de Bord{% endblock %}
 {% block content %}
-<h2>Welcome, {{ user.username }}</h2>
-<h3>Your Absences</h3>
-<ul>
-    {% for a in absences %}
-    <li>{{ a.date_debut }} – {{ a.date_fin }}: {{ a.motif }}</li>
-    {% empty %}
-    <li>No absences recorded.</li>
-    {% endfor %}
-</ul>
-<h3>Your Formations</h3>
-<ul>
-    {% for f in formations %}
-    <li>{{ f.intitule }} ({{ f.organisme }})</li>
-    {% empty %}
-    <li>No trainings recorded.</li>
-    {% endfor %}
-</ul>
-<h3>Your Performances</h3>
-<ul>
-    {% for p in performances %}
-    <li>{{ p.date_evaluation }}: {{ p.note }} / Comment: {{ p.commentaires }}</li>
-    {% empty %}
-    <li>No evaluations recorded.</li>
-    {% endfor %}
-</ul>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Bienvenue, {{ user.username }}</h2>
+                <p class="card-text">Utilisez ce tableau de bord pour suivre votre parcours au sein de Junior Sesame.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Vos Absences</h5>
+                <a href="{% url 'absence_create' %}" class="btn btn-sm btn-primary">Ajouter</a>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for a in absences|slice:":3" %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ a.date_debut|date:"d/m/Y" }} – {{ a.date_fin|date:"d/m/Y" }}</span>
+                            <span class="badge {% if a.notif_retour %}bg-warning{% else %}bg-primary{% endif %}">{{ a.get_motif_display }}</span>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-center text-muted">Aucune absence enregistrée</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{% url 'absence_list' %}" class="btn btn-sm btn-outline-secondary">Voir tout</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Vos Formations</h5>
+                <a href="{% url 'formation_create' %}" class="btn btn-sm btn-primary">Ajouter</a>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for f in formations|slice:":3" %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ f.intitule }}</span>
+                            <span class="badge {% if f.certification %}bg-success{% else %}bg-secondary{% endif %}">{{ f.organisme }}</span>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-center text-muted">Aucune formation enregistrée</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{% url 'formation_list' %}" class="btn btn-sm btn-outline-secondary">Voir tout</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Vos Évaluations</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for p in performances|slice:":3" %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ p.date_evaluation|date:"d/m/Y" }}</span>
+                            <span class="badge {% if p.note >= 3.5 %}bg-success{% elif p.note >= 2 %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ p.note }}
+                            </span>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-center text-muted">Aucune évaluation enregistrée</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{% url 'performance_list' %}" class="btn btn-sm btn-outline-secondary">Voir tout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if objectifs %}
+<div class="row mt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Vos Objectifs en cours</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Date d'échéance</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obj in objectifs %}
+                            <tr>
+                                <td><a href="{% url 'objectif_detail' obj.id %}">{{ obj.description|truncatechars:50 }}</a></td>
+                                <td>{{ obj.date_echeance|date:"d/m/Y" }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if obj.status == 'termine' %}bg-success
+                                        {% elif obj.status == 'en_cours' %}bg-primary
+                                        {% elif obj.status == 'non_commence' %}bg-secondary
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ obj.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

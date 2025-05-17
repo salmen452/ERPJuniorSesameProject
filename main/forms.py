@@ -3,7 +3,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import gettext_lazy as _
 
-from .models import CustomUser
+from .models import (
+    CustomUser, Absence, Formation, Competence, ExclusionDemission, 
+    Responsable, Performance, DocumentRH, HistoriqueDocument,
+    NotificationRetour, ObjectifMembre
+)
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -51,3 +55,72 @@ class EmailAuthenticationForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
+
+# Additional forms for HR management
+
+class AbsenceForm(forms.ModelForm):
+    class Meta:
+        model = Absence
+        fields = ['date_debut', 'date_fin', 'motif', 'details_motif', 'certificat_medical']
+        widgets = {
+            'date_debut': forms.DateInput(attrs={'type': 'date'}),
+            'date_fin': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+class NotificationRetourForm(forms.ModelForm):
+    class Meta:
+        model = NotificationRetour
+        fields = ['message']
+        
+class FormationForm(forms.ModelForm):
+    class Meta:
+        model = Formation
+        fields = ['intitule', 'organisme', 'date_debut', 'date_fin', 'niveau', 'certification', 'description', 'document_certification']
+        widgets = {
+            'date_debut': forms.DateInput(attrs={'type': 'date'}),
+            'date_fin': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+class CompetenceForm(forms.ModelForm):
+    class Meta:
+        model = Competence
+        fields = ['code', 'libelle', 'categorie', 'niveau']
+
+class ExclusionDemissionForm(forms.ModelForm):
+    class Meta:
+        model = ExclusionDemission
+        fields = ['type', 'date_effet', 'motif', 'document_reference', 'document_file', 'notes_additionnelles']
+        widgets = {
+            'date_effet': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+class PerformanceForm(forms.ModelForm):
+    class Meta:
+        model = Performance
+        fields = ['note', 'commentaires', 'forces', 'axes_amelioration', 'objectifs', 'objectifs_atteints', 'date_prochain_suivi']
+        widgets = {
+            'date_prochain_suivi': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+class ObjectifMembreForm(forms.ModelForm):
+    class Meta:
+        model = ObjectifMembre
+        fields = ['description', 'date_echeance', 'status', 'commentaires']
+        widgets = {
+            'date_echeance': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+class DocumentRHForm(forms.ModelForm):
+    class Meta:
+        model = DocumentRH
+        fields = ['titre', 'type', 'description', 'fichier', 'version', 'accessible_a']
+        
+class HistoriqueDocumentForm(forms.ModelForm):
+    class Meta:
+        model = HistoriqueDocument
+        fields = ['version', 'description_changements']
+
+class CustomUserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'first_name', 'last_name', 'telephone', 'adresse_postale']

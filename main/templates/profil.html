@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Mon Profil{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Mon Profil</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">Nom d'utilisateur</label>
+                                <input type="text" name="{{ form.username.name }}" value="{{ form.username.value|default:'' }}" 
+                                    class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                                    id="{{ form.username.id_for_label }}">
+                                {% if form.username.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.username.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                <input type="email" name="{{ form.email.name }}" value="{{ form.email.value|default:'' }}" 
+                                    class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                                    id="{{ form.email.id_for_label }}">
+                                {% if form.email.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.email.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">Prénom</label>
+                                <input type="text" name="{{ form.first_name.name }}" value="{{ form.first_name.value|default:'' }}" 
+                                    class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
+                                    id="{{ form.first_name.id_for_label }}">
+                                {% if form.first_name.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.first_name.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">Nom</label>
+                                <input type="text" name="{{ form.last_name.name }}" value="{{ form.last_name.value|default:'' }}" 
+                                    class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
+                                    id="{{ form.last_name.id_for_label }}">
+                                {% if form.last_name.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.last_name.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.telephone.id_for_label }}" class="form-label">Téléphone</label>
+                            <input type="tel" name="{{ form.telephone.name }}" value="{{ form.telephone.value|default:'' }}" 
+                                class="form-control {% if form.telephone.errors %}is-invalid{% endif %}" 
+                                id="{{ form.telephone.id_for_label }}">
+                            {% if form.telephone.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.telephone.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.adresse_postale.id_for_label }}" class="form-label">Adresse postale</label>
+                            <textarea name="{{ form.adresse_postale.name }}" 
+                                class="form-control {% if form.adresse_postale.errors %}is-invalid{% endif %}" 
+                                id="{{ form.adresse_postale.id_for_label }}" rows="3">{{ form.adresse_postale.value|default:'' }}</textarea>
+                            {% if form.adresse_postale.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.adresse_postale.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
